@@ -5,11 +5,11 @@ function Signin() {
   const { keycloak } = useKeycloak();
 
   if (!keycloak.authenticated) {
-    keycloak.login();
+    keycloak.login().then(() => {
+      return redirectByRole(keycloak.tokenParsed?.realm_access?.roles ?? [""]);
+    });
     return null;
   }
-
-  return redirectByRole(keycloak.tokenParsed?.realm_access?.roles ?? [""]);
 }
 
 export default Signin;

@@ -38,7 +38,7 @@ export const createHttpClient = (path: string) => {
     if (config.headers && token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-
+    await keycloak.updateToken();
     return config;
   });
   return httpClient;

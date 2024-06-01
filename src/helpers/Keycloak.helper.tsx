@@ -2,6 +2,7 @@ import { Navigate } from "react-router-dom";
 
 export const redirectByRole = (roles: string[]) => {
   for (let index = 0; index < roles.length; index++) {
+    console.log(roles[index]);
     switch (roles[index]) {
       case "administrador":
         return <Navigate to="/administrator" />;

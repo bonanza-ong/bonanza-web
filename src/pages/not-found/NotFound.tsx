@@ -32,10 +32,8 @@ function NotFound() {
 }
 
 const backgroundStyle: React.CSSProperties = {
-  maxWidth: "100vw",
-  width: "100vw",
-  height: "100vh",
   display: "flex",
+  height: "80%",
   flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
