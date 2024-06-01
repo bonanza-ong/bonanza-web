@@ -20,10 +20,10 @@ function AppHeader() {
   const { keycloak } = useKeycloak();
 
   const pages = [
-    { name: "Beneficiários", path: "/recipient" },
-    { name: "Padrinhos", path: "/supporter" },
-    { name: "Provedores", path: "/provider" },
-    { name: "Administradores", path: "/administrator" },
+    { name: "Beneficiários", path: "/recipient", role: "beneficiario" },
+    { name: "Padrinhos", path: "/supporter", role: "padrinho" },
+    { name: "Provedores", path: "/provider", role: "provedor" },
+    { name: "Administradores", path: "/administrator", role: "administrador" },
   ];
   const settings = [
     {
@@ -50,7 +50,7 @@ function AppHeader() {
             variant="h6"
             noWrap
             component="a"
-            href="home"
+            onClick={() => navigate("/home")}
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -59,20 +59,27 @@ function AppHeader() {
               letterSpacing: ".3rem",
               color: "inherit",
               textDecoration: "none",
+              cursor: "pointer",
             }}
           >
             BONANZA
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => (
-              <Button
-                key={page.name}
-                onClick={() => navigate(page.path)}
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
-                {page.name}
-              </Button>
-            ))}
+            {pages
+              .filter(
+                (page) =>
+                  keycloak.realmAccess?.roles.includes(page.role) ||
+                  keycloak.realmAccess?.roles.includes("administrador"),
+              )
+              .map((page) => (
+                <Button
+                  key={page.name}
+                  onClick={() => navigate(page.path)}
+                  sx={{ my: 2, color: "white", display: "block" }}
+                >
+                  {page.name}
+                </Button>
+              ))}
           </Box>
 
           {keycloak.authenticated ? (
@@ -100,6 +107,12 @@ function AppHeader() {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
+                <MenuItem style={{ pointerEvents: "none" }}>
+                  <Typography textAlign="center">
+                    {keycloak.tokenParsed?.email}
+                  </Typography>
+                  <hr></hr>
+                </MenuItem>
                 {settings.map((setting) => (
                   <MenuItem
                     key={setting.name}
@@ -114,14 +127,24 @@ function AppHeader() {
               </Menu>
             </Box>
           ) : (
-            <Button
-              variant="contained"
-              color="secondary"
-              href="signin"
-              sx={{ display: { xs: "none", md: "block" } }}
-            >
-              Entrar
-            </Button>
+            <div style={{ display: "flex", gap: "1rem" }}>
+              <Button
+                variant="contained"
+                color="success"
+                href="signup"
+                sx={{ display: { xs: "none", md: "block" } }}
+              >
+                Cadastre-se
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                href="signin"
+                sx={{ display: { xs: "none", md: "block" } }}
+              >
+                Entrar
+              </Button>
+            </div>
           )}
         </Toolbar>
       </Container>

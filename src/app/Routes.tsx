@@ -8,17 +8,29 @@ import Home from "../pages/home/Home";
 import Administrator from "../pages/administrator/Administrator";
 import Supporter from "../pages/supporter/Supporter";
 import Provider from "../pages/provider/Provider";
+import Signup from "../pages/signup/Signup";
+import AssignRole from "../pages/signup/AssignRole";
+import { isFullyRegistred } from "../helpers/Keycloak.helper";
 
 const Routes = (): React.JSX.Element => {
   return (
     <ReactRoutes>
       <Route path={"/signin"} element={<Signin />} />
+      <Route path={"/signup"} element={<Signup />} />
       <Route path={"/"} element={<Home />} />
       <Route path={"/home"} element={<Home />} />
       <Route
-        path={"/recipient"}
+        path={"/assignrole"}
         element={
           <ProtectedRoute>
+            <AssignRole />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={"/recipient"}
+        element={
+          <ProtectedRoute roles={["beneficiario", "administrador"]}>
             <Recipient />
           </ProtectedRoute>
         }
@@ -26,7 +38,7 @@ const Routes = (): React.JSX.Element => {
       <Route
         path={"/supporter"}
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={["padrinho", "administrador"]}>
             <Supporter />
           </ProtectedRoute>
         }
@@ -34,7 +46,7 @@ const Routes = (): React.JSX.Element => {
       <Route
         path={"/provider"}
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={["provedor", "administrador"]}>
             <Provider />
           </ProtectedRoute>
         }
@@ -42,7 +54,7 @@ const Routes = (): React.JSX.Element => {
       <Route
         path={"/administrator"}
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={["administrador"]}>
             <Administrator />
           </ProtectedRoute>
         }
@@ -52,10 +64,29 @@ const Routes = (): React.JSX.Element => {
   );
 };
 
-const ProtectedRoute = ({ children }: { children: ReactNode }) => {
+const ProtectedRoute = ({
+  children,
+  roles,
+}: {
+  children: ReactNode;
+  roles?: string[];
+}) => {
   const { keycloak } = useKeycloak();
 
-  return keycloak.authenticated ? children : <Navigate to="/home" />;
+  const authorized = roles
+    ? roles?.some((role) => keycloak.realmAccess?.roles.includes(role))
+    : true;
+  const authenticated = keycloak.authenticated;
+
+  if (
+    authenticated &&
+    !isFullyRegistred(keycloak.tokenParsed?.realm_access?.roles ?? [""]) &&
+    window.location.pathname !== "/assignrole"
+  ) {
+    return <Navigate to="/assignrole" />;
+  }
+
+  return authenticated && authorized ? children : <Navigate to="/home" />;
 };
 
 export default Routes;

@@ -12,6 +12,6 @@ export const useGetRecipients = (page: number, size: number) => {
     queryKey: [QUERY_KEYS.RECIPIENTS, page, size],
     queryFn: async () =>
       (await recipientsRoute.get("", { params: { page, size } })).data,
-    enabled: false,
+    enabled: true,
   });
 };

@@ -1,16 +1,14 @@
 import { useKeycloak } from "../../hooks/useKeycloak";
 import { redirectByRole } from "../../helpers/Keycloak.helper";
-import { usePostUser } from "../../api/routes/users/mutations";
+import { Navigate } from "react-router-dom";
 
 function Signup() {
   const { keycloak } = useKeycloak();
-  const signup = usePostUser();
 
   if (!keycloak.authenticated) {
-    keycloak.register().then(async () => {
-      await signup.mutateAsync();
+    keycloak.register().then(() => {
+      return <Navigate to="/assignrole" />;
     });
-    return null;
   }
 
   return redirectByRole(keycloak.tokenParsed?.realm_access?.roles ?? [""]);

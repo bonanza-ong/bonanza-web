@@ -1,2 +1,2 @@
 import { createHttpClient } from "../../config/http-client";
-export const recipientsRoute = createHttpClient(`/benficiarios`);
+export const recipientsRoute = createHttpClient(`/beneficiarios`);

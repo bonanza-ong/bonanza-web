@@ -37,6 +37,7 @@ export const usePostDemand = () => {
 export interface AnswerDemandRequest {
   recipientId: string;
   demandId: string;
+  quantityProvided: number;
 }
 
 export interface AnswerDemandResponse {
@@ -62,6 +63,7 @@ export const usePostAnswerDemand = () => {
       (
         await recipientsRoute.post(
           `${demandRequest.recipientId}/${demandRequest.demandId}`,
+          demandRequest.quantityProvided,
         )
       ).data,
   });
